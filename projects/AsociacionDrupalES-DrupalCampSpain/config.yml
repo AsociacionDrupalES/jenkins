@@ -1,0 +1,75 @@
+---
+
+domain: 'drupalcamp.es'
+domain_env: "{{ ('2019.' if appenv == 'pro' else '.' + appenv ) + domain }}"
+
+_databases: &DATABASES
+  aed:
+    db_name: "{{ '2019' if appenv == 'pro' else appenv }}camp"
+    sanitize_tasks: "{{ workspace }}/ansible/tasks/db-sanitize-drush.yml"
+
+pipelines:
+  deploy-ENV:
+    config:
+      jobFolder: ''
+      ansible:
+        extra_files:
+          - 'ansible/tasks/drush-cc-all.yml'
+    vars:
+      repo:
+        url: 'git@github.com:AsociacionDrupalES/DrupalCampSpain.git'
+        credentials_id: '20552984-a646-4dfc-b94a-59f26887fd59'
+      deploy:
+        credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
+    variants:
+      deploy-ENV:
+        vars:
+          environments: '#!groovy config._envs_dev'
+      PROD-deploy:
+        vars:
+          environments: '#!groovy config._envs_pro'
+
+  reload-dev:
+    basename: 'reload-ENV__legacy'
+
+  orchestrator-reload-dev:
+    basename: 'orchestrator-ENV__legacy'
+    config:
+      timer: 'H 5 * * *'
+
+          #  reload-ENV-db-from-backup:
+          #    config:
+          #      jobFolder: ''
+          #      ansible:
+          #        extra_files:
+          #          - 'ansible/tasks/db-sanitize-drush.yml'
+          #    vars:
+          #      databases:
+          #        << : *DATABASES
+          #    variants:
+          #      reload-ENV-db-from-backup:
+          #        vars:
+          #          environments: '#!groovy config._envs_dev_no_stg'
+          #          # job parameters
+          #          artifact: false
+          #          sanitize: true
+          #      reload-dev-db-from-backup:
+          #        vars:
+          #          environments: '#!groovy config._envs_stg'
+          #          # job parameters
+          #          artifact: true
+          #          sanitize: true
+          #
+          #  reload-dev-files-from-backup:
+          #    basename: 'playbook-ENV'
+          #    vars:
+          #      playbook: 'ansible/playbooks/reload-files.yml'
+          #      environments: '#!groovy config._envs_stg'
+          #      credentials_ansible: '02304973-08cf-4390-8edb-7a5c9d940cb8'
+          #      credentials_ssh_agent:
+          #        - '02304973-08cf-4390-8edb-7a5c9d940cb8'
+          #
+          #  reload-staging-from-backup:
+          #    config:
+          #      timer: '' #H 5 * * *'
+
