@@ -1,0 +1,4 @@
+# Ansistrano
+deploy_from: "{{ workspace }}"
+deploy_to: "/var/www/{{ domain }}"
+

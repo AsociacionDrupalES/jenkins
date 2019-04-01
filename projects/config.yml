@@ -1,0 +1,23 @@
+---
+
+_envs:
+  dev:
+    target: 'dev'
+    branch: 'dev'
+  pro:
+    target: 'pro'
+    branch: 'master'
+
+_envs_dev        : '#!groovy config._envs.findAll({it.key != "pro"})'
+_envs_dev_no_stg : '#!groovy config._envs.findAll({!(it.key in ["stage", "pro"])})'
+_envs_stg        : '#!groovy config._envs.findAll({it.key == "stage"})'
+_envs_pro        : '#!groovy config._envs.findAll({it.key == "pro"})'
+
+files:
+  ansible/ansible.cfg: {}
+  ansible/inventory: {}
+  ansible/extra-vars.yml: {}
+
+ansible:
+  extra_vars:
+    - 'ansible/extra-vars.yml'

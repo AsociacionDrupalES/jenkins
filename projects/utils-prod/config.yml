@@ -1,0 +1,6 @@
+---
+
+numToKeep: 5
+
+pipelines:
+  clean-varnish: {}

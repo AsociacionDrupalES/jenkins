@@ -1,0 +1,79 @@
+#!groovy
+
+/* Global vars */
+String JENKINS_CREDENTIALS_ID__deploy = '02304973-08cf-4390-8edb-7a5c9d940cb8'
+
+/* Job vars */
+def DOMAINS = [
+  'asociaciondrupal.es',
+  'drupalcamp.es',
+]
+String ANSIBLE_JOB_INVENTORY_CONTENT = '''
+aed01.asociaciondrupal.es ansible_host=127.0.0.1 ansible_user=deploy ansible_ssh_extra_args='-o ForwardAgent=yes'
+'''
+String ANSIBLE_JOB_PLAYBOOK_CONTENT = '''---
+- name: 'Clean Varnish'
+  hosts: all
+
+  tasks :
+  - name: "Clean {{ url }} on {{ domain }}"
+    shell: "curl -X BAN 'http://127.0.0.1:6081/{{ url }}' -H 'Host: {{ domain }}' --fail -s  -o /dev/null"
+'''
+def ANSIBLE_JOB_extraVars = [
+  domain: "${params.DOMAIN}",
+  url: "${params.URL}",
+]
+String ANSIBLE_CONFIG_REL_PATH = 'ansible.cfg'
+String ANSIBLE_CONFIG_DEFAULT_CONTENT = '''
+[defaults]
+roles_path = ansible/roles
+gather_subset = !all
+callback_whitelist = profile_tasks, profile_roles
+retry_files_enabled = False
+'''
+
+pipeline {
+  agent any
+  options {
+    skipDefaultCheckout()
+    ansiColor('xterm')
+  }
+  
+  parameters {
+    choice(name: 'DOMAIN', choices: "${DOMAINS.join('\n')}", description: 'Domain to clear')
+    string(name: 'URL', defaultValue: '.*', description: 'Regex URL to clear')
+  }
+  
+  stages {
+    stage('main') {
+      environment {
+        ANSIBLE_CONFIG = "${env.WORKSPACE}/${ANSIBLE_CONFIG_REL_PATH}"
+        ANSIBLE_INVENTORY_FILE = "${env.WORKSPACE}/.ansible_inventory"
+        ANSIBLE_PLAYBOOK_FILE = "${env.WORKSPACE}/ansible_playbook.yml"
+      }
+      steps {
+        script {
+          // Create a default config if absent
+          if ( !fileExists("${env.ANSIBLE_CONFIG}") ) {
+            writeFile encoding: 'utf8', file: "${env.ANSIBLE_CONFIG}", text: "${ANSIBLE_CONFIG_DEFAULT_CONTENT}"
+          }
+        }
+        // Create inventory
+        writeFile encoding: 'utf8', file: "${env.ANSIBLE_INVENTORY_FILE}", text: "${ANSIBLE_JOB_INVENTORY_CONTENT}"
+        // Create playbook
+        writeFile encoding: 'utf8', file: "${env.ANSIBLE_PLAYBOOK_FILE}", text: "${ANSIBLE_JOB_PLAYBOOK_CONTENT}"
+        // Run playbook
+        ansiblePlaybook(
+          colorized: true,
+          credentialsId: "${JENKINS_CREDENTIALS_ID__deploy}",
+          forks: 20,
+          inventory: "${env.ANSIBLE_INVENTORY_FILE}",
+          playbook: "${env.ANSIBLE_PLAYBOOK_FILE}",
+          sudoUser: null,
+          extraVars: ANSIBLE_JOB_extraVars,
+          //extras: '-vvvvv'
+        )
+      }
+    }
+  }
+}
