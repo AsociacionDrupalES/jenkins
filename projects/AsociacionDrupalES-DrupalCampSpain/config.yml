@@ -7,9 +7,6 @@ pipelines:
   deploy-ENV:
     config:
       jobFolder: ''
-      ansible:
-        extra_files:
-          - 'ansible/tasks/drush-cc-all.yml'
     vars:
       repo:
         url: 'git@github.com:AsociacionDrupalES/DrupalCampSpain.git'

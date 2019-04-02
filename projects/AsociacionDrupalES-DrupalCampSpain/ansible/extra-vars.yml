@@ -1,0 +1,16 @@
+---
+
+ansistrano_shared_paths:
+  - 'web/sites/default/files'
+  - 'web/sites/default/private'
+ansistrano_shared_files:
+  - 'web/sites/default/settings.local.php'
+
+rsync_extra_params:
+  - '--exclude=web/sites/default/settings.local.php'
+
+drupal_rel_path : '/web'
+drush_args : ''
+varnish_domain : 'drupalcamp.es'
+varnish_servers :
+  - '127.0.0.1:6081'
