@@ -1,7 +1,5 @@
 ---
 
-domain: 'drupalday.es'
-
 files:
   ansible/dday/extra-vars.yml:
     path: 'ansible/extra-vars.yml'

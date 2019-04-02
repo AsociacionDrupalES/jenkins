@@ -1,7 +1,5 @@
 ---
 
-domain: 'asociaciondrupal.es'
-
 files:
   ansible/aed/extra-vars.yml:
     path: 'ansible/extra-vars.yml'

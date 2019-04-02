@@ -1,7 +1,5 @@
 ---
 
-domain: 'drupalcamp.es'
-
 files:
   ansible/dcamp/extra-vars.yml:
     path: 'ansible/extra-vars.yml'
