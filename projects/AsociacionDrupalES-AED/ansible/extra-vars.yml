@@ -11,6 +11,6 @@ rsync_extra_params:
 
 drupal_rel_path : ''
 drush_args : ''
-varnish_domain : 'asociaciondrupal.es'
+varnish_domain : "{{ 'dummy' if appenv != 'pro' else 'asociaciondrupal.es' }}"
 varnish_servers :
   - '127.0.0.1:6081'

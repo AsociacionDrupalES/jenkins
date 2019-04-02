@@ -11,6 +11,6 @@ rsync_extra_params:
 
 drupal_rel_path : '/web'
 drush_args : ''
-varnish_domain : 'drupalcamp.es'
+varnish_domain : "{{ 'dummy' if appenv != 'pro' else 'drupalcamp.es' }}"
 varnish_servers :
   - '127.0.0.1:6081'
