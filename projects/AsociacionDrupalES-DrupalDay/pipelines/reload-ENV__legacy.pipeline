@@ -1,0 +1,104 @@
+#!groovy
+
+String pro_domain = 'asociaciondrupal.es'
+String dev_domain = 'dev.asociaciondrupal.es'
+String drush_pro = "drush -l ${pro_domain} -r /var/www/${pro_domain}/current"
+String drush_dev = "drush -l ${dev_domain} -r /var/www/${dev_domain}/current"
+String files_pro = "/var/www/${pro_domain}/shared/sites/default/files/"
+String files_dev = "/var/www/${dev_domain}/shared/sites/default/files/"
+String rsyncOpts = '-azv --delete --exclude .php --exclude php --exclude styles'
+String deploySshKeyId = '02304973-08cf-4390-8edb-7a5c9d940cb8'
+
+pipeline {
+  agent any
+  options {
+    skipDefaultCheckout()
+    ansiColor('xterm')
+    timestamps()
+    //timeout(time: 60, unit: 'MINUTES')
+    //disableConcurrentBuilds()
+  }
+  stages {
+    stage('legacy') {
+      steps {
+        script {
+
+lock(resource: "dev.asociaciondrupal.es") {
+    parallel (
+        Files: {
+            node('master') {
+                //TODO: consider locking to avoid io contention
+                //TODO: consider unison instead of rsync for performance (a log cleanup process will be necesary)
+                echo '---- Sync Files ----------------------------------------------------------------'
+                stage('Sync files') {
+                    tempSyncPlaybookFile = "ansible-sync-files_playbook.yml"
+                    tempSyncInventoryFile = "ansible-sync-files_inventory"
+                    //TODO: Improve
+                    // Create playbook
+                    writeFile encoding: 'utf8', file: "${tempSyncPlaybookFile}", text: """---
+- name: 'sync files'
+  hosts: all
+  vars:
+    - src: ${files_pro}
+    - dst: ${files_dev}
+    - rsync_opts: ${rsyncOpts}
+
+  tasks :
+  - name: 'synchronize'
+    command: "rsync {{ rsync_opts }} {{ src }} {{ dst }}"
+    register: sync_files
+    
+  - name: "debug synchronize"
+    debug: var=sync_files
+"""
+                    // Create inventory
+                    writeFile encoding: 'utf8', file: "${tempSyncInventoryFile}", text: """
+127.0.0.1 ansible_user=deploy ansible_ssh_extra_args='-o ForwardAgent=yes' # Switch to deploy user and forward keys for remote access
+"""
+
+                    ansiColor('xterm') {
+                        // We need ssh-agent for remote access
+                        sshagent(["${deploySshKeyId}"]) {
+                            ansiblePlaybook extra: '-vvv', colorized: true, credentialsId: "${deploySshKeyId}", forks: 5, inventory: "${tempSyncInventoryFile}", playbook: "${tempSyncPlaybookFile}", sudoUser: null
+                        }
+                    }
+                    //Cleanup
+                    sh "rm ${tempSyncPlaybookFile} -f"
+                    sh "rm ${tempSyncInventoryFile} -f"
+                }
+            }
+        },
+        DB: {
+            node('master') {
+                echo '---- Load DB ----------------------------------------------------------------'
+                stage('Load DB') {
+                    sshagent(["${deploySshKeyId}"]) {
+                        sh "ssh deploy@127.0.0.1 -C '${drush_pro} sql-dump | ${drush_dev} sql-cli'"
+                    }
+                }
+                echo '---- Sanitize DB ----------------------------------------------------------------'
+                stage('Sanitize DB') {
+                    sshagent(["${deploySshKeyId}"]) {
+                        String sanitizePass = 'd3v3l0p3r$'
+                        sh "ssh deploy@127.0.0.1 -C '${drush_dev} sql-sanitize -y --sanitize-email=asociacion+user_%uid@drupal.es --sanitize-password=${sanitizePass}'"
+                    }
+                }
+                echo '---- Dump DB ----------------------------------------------------------------'
+                stage('Dump DB') {
+                    String dumpFile = 'dcamp2018.sql.gz'
+                    sshagent(["${deploySshKeyId}"]) {
+                        sh "ssh deploy@127.0.0.1 -C '${drush_dev} sql-dump' | gzip > ${dumpFile}"
+                    }
+                    archiveArtifacts artifacts: "${dumpFile}", fingerprint: true
+                    sh "rm ${dumpFile}"
+                }
+            }
+        },
+    )
+}
+
+        }
+      }
+    }
+  }
+}

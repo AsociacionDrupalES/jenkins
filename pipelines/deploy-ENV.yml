@@ -1,0 +1,20 @@
+---
+
+params:
+  environment:
+    type: 'choice'
+    description: 'Destination Environment'
+    choices: '${envs = ENVIRONMENTS.keySet(); if (envs.size() == 1) envs.first() else ''-SELECT ONE-\n'' + envs.join(''\n'')}'
+
+environments: {}
+repo:
+  url: ''
+  credentials_id: ''
+
+build:
+  playbook: 'ansible/playbooks/build.yml'
+
+deploy:
+  playbook: 'ansible/playbooks/deploy.yml'
+  credentials_id: ''
+

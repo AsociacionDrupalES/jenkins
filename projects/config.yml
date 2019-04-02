@@ -9,8 +9,8 @@ _envs:
     branch: 'master'
 
 _envs_dev        : '#!groovy config._envs.findAll({it.key != "pro"})'
-_envs_dev_no_stg : '#!groovy config._envs.findAll({!(it.key in ["stage", "pro"])})'
-_envs_stg        : '#!groovy config._envs.findAll({it.key == "stage"})'
+_envs_dev_no_stg : '#!groovy config._envs.findAll({!(it.key in ["dev", "pro"])})'
+_envs_stg        : '#!groovy config._envs.findAll({it.key == "dev"})'
 _envs_pro        : '#!groovy config._envs.findAll({it.key == "pro"})'
 
 files:

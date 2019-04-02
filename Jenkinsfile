@@ -7,20 +7,23 @@ pipeline {
   options {
     buildDiscarder(logRotator(numToKeepStr:'15'))
     disableConcurrentBuilds()
-    gitLabConnection('gitlab')
     //skipDefaultCheckout()
     lock("seed")
     ansiColor('xterm')
   }
-  triggers {
-    gitlab(
-      triggerOnPush: true,
-      branchFilterType: 'NameBasedFilter',
-      includeBranchesSpec: 'master',
-      excludeBranchesSpec: '',
-     )
-  }
   stages {
+    stage('init') {
+      steps {
+        script {
+          properties(
+            [
+              [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/AsociacionDrupalES/jenkins'],
+              pipelineTriggers([githubPush()])
+            ]
+          )
+        }
+      }
+    }
     stage('main') {
       steps {
         seed()

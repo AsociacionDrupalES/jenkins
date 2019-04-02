@@ -1,0 +1,106 @@
+#!groovy
+
+/* Job vars */
+def LOCK = env.JOB_NAME
+Integer TIMEOUT = CONFIG.timeout
+def ANSIBLE_EXTRA_VARS_LOCAL
+String ENVIRONMENT
+String TARGET
+String BRANCH
+String GIT_URL
+def ENVIRONMENTS = VARS.environments.findAll{it.value != false}
+
+if ( !params.RECONFIGURE_PIPELINE ) {
+  /* Runtime vars */
+  ENVIRONMENT = env.GIT_BRANCH ? env.GIT_BRANCH.tokenize('/').last() : params.environment
+  TARGET = ENVIRONMENTS[ENVIRONMENT]['target']
+  TARGET = CONFIG.inventory_maps[TARGET] ?: TARGET
+  BRANCH = ENVIRONMENTS[ENVIRONMENT]['branch']
+
+  ANSIBLE_EXTRA_VARS_LOCAL=[
+    appenv: ENVIRONMENT,
+    target: TARGET,
+  ]
+
+  LOCK = "${CONFIG.name}-${ENVIRONMENT}"
+}
+
+pipeline {
+  agent any
+  options {
+    skipDefaultCheckout()
+    ansiColor('xterm')
+    lock(LOCK)
+    timeout(time: TIMEOUT, unit: 'MINUTES')
+    timestamps()
+  }
+  stages {
+    stage('init') {
+      steps {
+        script {
+          currentBuild.description = "Deploy ${BRANCH} on ${ENVIRONMENT} (${TARGET}): ${currentBuild.description ?: '-'}"
+          properties(
+            [
+              [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: VARS.repo.url],
+              pipelineTriggers([githubPush()])
+            ]
+          )
+        }
+      }
+    }
+    stage('git') {
+      steps {
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: BRANCH]],
+          extensions: [[$class: 'CleanCheckout']],
+          userRemoteConfigs: [[
+            credentialsId: VARS.repo.credentials_id,
+            url: VARS.repo.url,
+          ]]
+        ])
+      }
+    }
+    stage('build') {
+      steps {
+        // Credentials may be needed by composer.
+        sshagent([VARS.repo.credentials_id]) {
+          runAnsiblePlaybook(CONFIG.ansible, VARS.build.playbook, ANSIBLE_EXTRA_VARS_LOCAL)
+        }
+      }
+    }
+    stage('deploy') {
+      steps {
+        script {
+          ANSISTRANO_HOOKS = [
+            ansistrano_before_setup_tasks_file: "ansible/tasks/ansistrano_before_setup_tasks.yml",
+            ansistrano_after_setup_tasks_file: "ansible/tasks/ansistrano_after_setup_tasks.yml",
+            ansistrano_before_update_code_tasks_file: "ansible/tasks/ansistrano_before_update_code_tasks.yml",
+            ansistrano_after_update_code_tasks_file: "ansible/tasks/ansistrano_after_update_code_tasks.yml",
+            ansistrano_before_symlink_shared_tasks_file: "ansible/tasks/ansistrano_before_symlink_shared_tasks.yml",
+            ansistrano_after_symlink_shared_tasks_file: "ansible/tasks/ansistrano_after_symlink_shared_tasks.yml",
+            ansistrano_before_symlink_tasks_file: "ansible/tasks/ansistrano_before_symlink_tasks.yml",
+            ansistrano_after_symlink_tasks_file: "ansible/tasks/ansistrano_after_symlink_tasks.yml",
+            ansistrano_before_cleanup_tasks_file: "ansible/tasks/ansistrano_before_cleanup_tasks.yml",
+            ansistrano_after_cleanup_tasks_file: "ansible/tasks/ansistrano_after_cleanup_tasks.yml",
+          ]
+          provisionFiles(ANSISTRANO_HOOKS.collect{it.value})
+          ANSISTRANO_HOOKS.each {
+            ANSIBLE_EXTRA_VARS_LOCAL.put(it.key, "{{workspace}}/" + it.value)
+          }
+        }
+
+        gitlabCommitStatus(name:"deploy-${BRANCH}") {
+          runAnsiblePlaybook(CONFIG.ansible, VARS.deploy.playbook, ANSIBLE_EXTRA_VARS_LOCAL, VARS.deploy.credentials_id)
+        }
+      }
+    }
+  }
+  post {
+    cleanup {
+      cleanWs()
+    }
+  }
+}
+
+// vi:syntax=groovy
