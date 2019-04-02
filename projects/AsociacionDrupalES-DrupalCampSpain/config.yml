@@ -2,6 +2,15 @@
 
 domain: 'drupalcamp.es'
 
+files:
+  ansible/dcamp/extra-vars.yml:
+    path: 'ansible/extra-vars.yml'
+
+ansible:
+  extra_vars:
+    - 'ansible/extra-vars.yml'
+    - 'ansible/dcamp/extra-vars.yml'
+
 pipelines:
   deploy-ENV:
     config:

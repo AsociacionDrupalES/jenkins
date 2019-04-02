@@ -2,6 +2,15 @@
 
 domain: 'asociaciondrupal.es'
 
+files:
+  ansible/aed/extra-vars.yml:
+    path: 'ansible/extra-vars.yml'
+
+ansible:
+  extra_vars:
+    - 'ansible/extra-vars.yml'
+    - 'ansible/aed/extra-vars.yml'
+
 pipelines:
   deploy-ENV:
     config:
