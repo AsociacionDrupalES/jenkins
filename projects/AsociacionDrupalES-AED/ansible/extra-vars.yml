@@ -1,7 +1,7 @@
 ---
 
 domain: 'asociaciondrupal.es'
-domain_env: "{{ ('' if appenv == 'pro' else appenv '.') + domain }}"
+domain_env: "{{ ( '' if appenv == 'pro' else appenv '.' ) + domain }}"
 
 ansistrano_shared_paths:
   - 'sites/default/files'

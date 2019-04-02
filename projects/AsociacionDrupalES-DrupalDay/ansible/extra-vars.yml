@@ -1,7 +1,7 @@
 ---
 
 domain: 'drupalday.es'
-domain_env: "{{ ('2017.' if appenv == 'pro' else appenv + '.') + domain }}"
+domain_env: "{{ ( '2017.' if appenv == 'pro' else appenv + '.' ) + domain }}"
 
 ansistrano_shared_paths:
   - 'sites/default/files'

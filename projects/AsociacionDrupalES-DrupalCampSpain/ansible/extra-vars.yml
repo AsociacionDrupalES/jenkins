@@ -1,7 +1,7 @@
 ---
 
 domain: 'drupalcamp.es'
-domain_env: "{{ ('2019.' if appenv == 'pro' else appenv + '.') + domain }}"
+domain_env: "{{ ( '2019.' if appenv == 'pro' else appenv + '.' ) + domain }}"
 
 ansistrano_shared_paths:
   - 'web/sites/default/files'
