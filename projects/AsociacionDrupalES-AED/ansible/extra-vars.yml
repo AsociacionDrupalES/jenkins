@@ -1,5 +1,7 @@
 ---
 
+domain_env: "{{ ('' if appenv == 'pro' else '.' + appenv ) + domain }}"
+
 ansistrano_shared_paths:
   - 'sites/default/files'
   - 'sites/default/private'

@@ -1,7 +1,6 @@
 ---
 
 domain: 'asociaciondrupal.es'
-domain_env: "{{ ('' if appenv == 'pro' else '.' + appenv ) + domain }}"
 
 pipelines:
   deploy-ENV:
