@@ -2,3 +2,6 @@
 deploy_from: "{{ workspace }}"
 deploy_to: "/var/www/{{ domain_env }}"
 
+deploy__after_symlink_tasks:
+   - "{{ workspace }}/ansible/tasks/after-symlink-tasks.yml"
+

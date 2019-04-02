@@ -90,9 +90,7 @@ pipeline {
           }
         }
 
-        gitlabCommitStatus(name:"deploy-${BRANCH}") {
-          runAnsiblePlaybook(CONFIG.ansible, VARS.deploy.playbook, ANSIBLE_EXTRA_VARS_LOCAL, VARS.deploy.credentials_id)
-        }
+        runAnsiblePlaybook(CONFIG.ansible, VARS.deploy.playbook, ANSIBLE_EXTRA_VARS_LOCAL, VARS.deploy.credentials_id)
       }
     }
   }
