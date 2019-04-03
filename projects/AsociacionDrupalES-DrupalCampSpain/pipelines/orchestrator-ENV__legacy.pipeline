@@ -9,6 +9,9 @@ pipeline {
     //timeout(time: 60, unit: 'MINUTES')
     //disableConcurrentBuilds()
   }
+  triggers {
+    cron('0 5 * * *')
+  }
   stages {
     stage('reload') {
       steps {

@@ -32,6 +32,4 @@ pipelines:
 
   orchestrator-reload-dev:
     basename: 'orchestrator-ENV__legacy'
-    config:
-      timer: 'H 5 * * *'
 
