@@ -1,5 +1,5 @@
 # Ansistrano
-deploy_from: "{{ workspace }}"
+deploy_from: "{{ workspace }}/"
 deploy_to: "/var/www/{{ domain_env }}"
 
 deploy__after_symlink_tasks:
