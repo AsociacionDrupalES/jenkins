@@ -1,6 +1,6 @@
 [dev]
 aed01.asociaciondrupal.es ansible_user=deploy
 
-[prod]
+[pro]
 aed01.asociaciondrupal.es ansible_user=deploy
 
