@@ -1,7 +1,7 @@
 #!groovy
 
-String pro_domain = 'asociaciondrupal.es'
-String dev_domain = 'dev.asociaciondrupal.es'
+String pro_domain = '2019.drupalcamp.es'
+String dev_domain = 'dev.drupalcamp.es'
 String drush_pro = "drush -l ${pro_domain} -r /var/www/${pro_domain}/current"
 String drush_dev = "drush -l ${dev_domain} -r /var/www/${dev_domain}/current"
 String files_pro = "/var/www/${pro_domain}/shared/sites/default/files/"
@@ -23,7 +23,7 @@ pipeline {
       steps {
         script {
 
-lock(resource: "dev.asociaciondrupal.es") {
+lock(resource: "dev.idrupalcamp.es") {
     parallel (
         Files: {
             node('master') {
