@@ -12,10 +12,16 @@ def ENVIRONMENTS = VARS.environments.findAll{it.value != false}
 
 if ( !params.RECONFIGURE_PIPELINE ) {
   /* Runtime vars */
-  ENVIRONMENT = env.GIT_BRANCH ? env.GIT_BRANCH.tokenize('/').last() : params.environment
+  if (env.GIT_BRANCH) {
+    BRANCH = env.GIT_BRANCH.tokenize('/').last()
+    ENVIRONMENT = envs.findAll{it.value.branch == BRANCH && it.value.trigger != false}.collect{it.key}.first()
+  }
+  else {
+    ENVIRONMENT = params.environment
+    BRANCH = ENVIRONMENTS[ENVIRONMENT]['branch']
+  }
   TARGET = ENVIRONMENTS[ENVIRONMENT]['target']
   TARGET = CONFIG.inventory_maps[TARGET] ?: TARGET
-  BRANCH = ENVIRONMENTS[ENVIRONMENT]['branch']
 
   ANSIBLE_EXTRA_VARS_LOCAL=[
     appenv: ENVIRONMENT,
