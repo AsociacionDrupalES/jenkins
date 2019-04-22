@@ -26,7 +26,7 @@ pipeline {
     }
     stage('main') {
       steps {
-        seed()
+        seed('admin/dev')
       }
     }
   }
