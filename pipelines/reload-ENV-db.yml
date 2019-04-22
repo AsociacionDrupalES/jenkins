@@ -1,0 +1,5 @@
+---
+
+credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
+
+sanitize_tasks: "{{ workspace }}/ansible/tasks/db-sanitize-drush.yml"

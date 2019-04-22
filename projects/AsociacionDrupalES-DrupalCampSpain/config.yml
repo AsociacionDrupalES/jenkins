@@ -1,5 +1,9 @@
 ---
 
+_databases:
+  camp:
+    db_name: "{{ appenv }}camp"
+
 files:
   ansible/dcamp/extra-vars.yml:
     path: 'ansible/extra-vars.yml'
@@ -20,16 +24,46 @@ pipelines:
       deploy:
         credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
     variants:
-      deploy-ENV:
+      deploy-dev:
         vars:
           environments: '#!groovy config._envs_dev'
       PROD-deploy:
         vars:
           environments: '#!groovy config._envs_pro'
 
-  reload-dev:
-    basename: 'reload-ENV__legacy'
+  reload-dev-db:
+    basename: 'reload-ENV-db'
+    config:
+      jobFolder: ''
+      ansible:
+        extra_files:
+          - 'ansible/tasks/db-sanitize-drush.yml'
+    vars:
+      databases: '#!groovy config._databases'
+      environments: '#!groovy config._envs'
+      # job parameters
+      artifact: true
+      sanitize: true
+      environment: 'dev'
+      source: 'From backup'
+      environment_src: '-NOT APPLICABLE-'
 
-  orchestrator-reload-dev:
-    basename: 'orchestrator-ENV__legacy'
+  reload-dev-files:
+    basename: 'reload-ENV-files'
+    vars:
+      environments: '#!groovy config._envs'
+      environment: 'dev'
+      source: 'From another environment'
+      environment_src: 'pro'
+
+  reload-dev:
+    basename: 'reload-ENV'
+    vars:
+      job_reload_db:
+        name: 'reload-dev-db'
+      job_reload_files:
+        name: 'reload-dev-files'
+      job_deploy:
+        name: 'deploy-dev'
+      environments: '#!groovy config._envs_dev'
 
