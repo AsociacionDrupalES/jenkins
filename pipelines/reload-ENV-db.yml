@@ -1,0 +1,8 @@
+---
+
+credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
+
+duplicity_pass: 'DruMadMen16'
+duplicity_source_url: 'ftp://ns343902.ip-188-165-240.eu:uRxDWTciZY@ftpback-rbx3-432.ovh.net/aed01'
+
+sanitize_tasks: "{{ workspace }}/ansible/tasks/db-sanitize-drush.yml"

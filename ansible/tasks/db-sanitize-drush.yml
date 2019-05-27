@@ -1,0 +1,21 @@
+---
+
+- name: 'Sanitize | sql-sanitize'
+  drush:
+  args:
+    command: "sql-sanitize --sanitize-email=\"{{ drush_sanitize_mail }}\" --sanitize-password=\"{{ drush_sanitize_pass }}\""
+    chdir: "{{ deploy_to }}/{{ docroot }}"
+
+- name: 'Sanitize | disable modules'
+  drush:
+  args:
+    command: "pm-disable {{ drush_sanitize_modules_disable }}"
+    chdir: "{{ deploy_to }}/{{ docroot }}"
+  when: drush_sanitize_modules_disable is defined and drush_sanitize_modules_disable|length > 0
+
+- name: 'Sanitize | enable modules'
+  drush:
+  args:
+    command: "pm-enable --resolve-dependencies=no {{ drush_sanitize_modules_enable }}"
+    chdir: "{{ deploy_to }}/{{ docroot }}"
+  when: drush_sanitize_modules_enable is defined and drush_sanitize_modules_enable|length > 0
