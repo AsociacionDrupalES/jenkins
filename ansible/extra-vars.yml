@@ -3,12 +3,17 @@
 ### Ansible / Ansistrano
 deploy_from: "{{ workspace }}/"
 deploy_to: "/var/www/{{ domain_env }}"
+docroot: 'current'
 deploy__after_symlink_tasks:
    - "{{ workspace }}/ansible/tasks/after-symlink-tasks.yml"
 
 ### sbhell / drush
 drush_alias: ''
 drush_args: "-y --nocolor -l {{ domain_env }}"
+
+### Deploy
+varnish_servers :
+  - '127.0.0.1:6081'
 
 ### Reload db
 drush_sanitize_pass: 'd3v3l0p3r$'
