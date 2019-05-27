@@ -17,6 +17,7 @@ files:
   ansible/ansible.cfg: {}
   ansible/inventory: {}
   ansible/extra-vars.yml: {}
+  ansible/tasks/db-sanitize-drush.yml: {}
 
 ansible:
   extra_vars:
