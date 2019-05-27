@@ -4,12 +4,6 @@
 domain: 'drupalcamp.es'
 domain_env: "{{ ( '2020.' if appenv == 'pro' else appenv + '.' ) + domain }}"
 
-ansistrano_shared_paths:
-  - 'web/sites/default/files'
-  - 'web/sites/default/private'
-ansistrano_shared_files:
-  - 'web/sites/default/settings.local.php'
-
 ### Deploy
 rsync_extra_params:
   - '--exclude=web/sites/default/settings.local.php'
@@ -24,4 +18,12 @@ drush_sanitize_mail: 'drupalcamp+user_%uid@drupal.es'
 
 ### Reload files
 public_files_dir: 'web/sites/default/files'
+
+# Shared
+shared_dirs:
+  web/sites/default/files: "{{ shared_dir }}"
+  web/sites/default/private: "{{ shared_dir }}"
+
+shared_files:
+  web/sites/default/settings.local.php: "{{ shared_file }}"
 
