@@ -8,11 +8,6 @@ domain_env: "{{ ( '' if appenv == 'pro' else appenv + '.' ) + domain }}"
 rsync_extra_params:
   - '--exclude=sites/default/settings.local.php'
 
-drupal_rel_path : ''
-drush_args : ''
-varnish_domain : "{{ 'dummy' if appenv != 'pro' else 'asociaciondrupal.es' }}"
-varnish_servers :
-  - '127.0.0.1:6081'
 ### Reload db
 drush_sanitize_mail: 'asociacion+user_%uid@drupal.es'
 

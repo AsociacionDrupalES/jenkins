@@ -3,16 +3,12 @@
 ### Ansible / Ansistrano
 domain: 'drupalday.es'
 domain_env: "{{ ( '2019.' if appenv == 'pro' else appenv + '.' ) + domain }}"
+docroot: 'current/web'
 
 ### Deploy
 rsync_extra_params:
-  - '--exclude=web/sites/default/settings.local.php'
+  - '--exclude=sites/default/settings.local.php'
 
-drupal_rel_path : ''
-drush_args : ''
-varnish_domain : "{{ 'dummy' if appenv != 'pro' else 'drupalday.es' }}"
-varnish_servers :
-  - '127.0.0.1:6081'
 ### Reload db
 drush_sanitize_mail: 'drupalday+user_%uid@drupal.es'
 
