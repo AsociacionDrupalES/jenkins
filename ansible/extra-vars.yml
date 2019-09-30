@@ -1,7 +1,44 @@
-# Ansistrano
+---
+
+### Ansible / Ansistrano
 deploy_from: "{{ workspace }}/"
 deploy_to: "/var/www/{{ domain_env }}"
 
 deploy__after_symlink_tasks:
    - "{{ workspace }}/ansible/tasks/after-symlink-tasks.yml"
 
+### Shared
+deploy_owner: 'deploy'
+www_owner: 'www-data'
+
+deploy_group: "{{ deploy_owner }}"
+www_group: "{{ www_owner }}"
+
+shared_dir:
+  state: 'directory'
+  owner: "{{ deploy_owner }}"
+  group: "{{ www_group }}"
+  mode: '2775'
+
+# Set owner, group and mode because initialize-shared
+# in a first step creates links as directories, to ensure parents
+shared_dir_link:
+  state: 'link'
+  owner: "{{ deploy_owner }}"
+  group: "{{ www_group }}"
+  mode: '2775'
+
+shared_file:
+  state : 'file'
+  owner : "{{ deploy_owner }}"
+  group : "{{ www_group }}"
+  mode  : '0664'
+
+shared:
+  base:
+    path: "{{ deploy_to }}/shared"
+    owner: "{{ deploy_owner }}"
+    group: "{{ deploy_group }}"
+    mode: '0755'
+  dirs: "{{ shared_dirs|default({}) }}"
+  files: "{{ shared_files|default({}) }}"
