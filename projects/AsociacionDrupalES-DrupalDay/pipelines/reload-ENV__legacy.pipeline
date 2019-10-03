@@ -1,6 +1,6 @@
 #!groovy
 
-String pro_domain = '2017.drupalday.es'
+String pro_domain = '2019.drupalday.es'
 String dev_domain = 'dev.drupalday.es'
 String drush_pro = "drush -l ${pro_domain} -r /var/www/${pro_domain}/current"
 String drush_dev = "drush -l ${dev_domain} -r /var/www/${dev_domain}/current"
