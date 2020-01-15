@@ -3,7 +3,7 @@
 job_reload_db:
   name: 'reload-dev-db'
 job_reload_files:
-  name: 'reload-dev-files'
+  name: 'reload-dev-files-from-prod'
   propagate: false
 job_deploy:
   name: 'deploy-dev'
