@@ -3,6 +3,7 @@
 _databases:
   camp:
     db_name: "{{ appenv }}camp"
+    duplicity_file_to_restore: "var/backups/mysql/sqldump/2020camp.sql"
 
 files:
   ansible/dcamp/extra-vars.yml:
