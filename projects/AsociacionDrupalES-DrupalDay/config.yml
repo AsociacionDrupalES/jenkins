@@ -3,6 +3,7 @@
 _databases:
   day:
     db_name: "{{ appenv }}day"
+    duplicity_file_to_restore: "var/backups/mysql/sqldump/2019day.sql"
 
 files:
   ansible/dday/extra-vars.yml:
