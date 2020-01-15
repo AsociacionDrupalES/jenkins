@@ -5,6 +5,9 @@ domain: 'drupalday.es'
 domain_env: "{{ ( '2019.' if appenv == 'pro' else appenv + '.' ) + domain }}"
 docroot: 'current/web'
 
+### sbhell / drush
+drush_args: "-y --nocolor -l {{ domain_env }}"
+
 ### Deploy
 rsync_extra_params:
   - '--exclude=sites/default/settings.local.php'
