@@ -8,8 +8,7 @@ fetcher:
            --omit-dir-times \
            --chown=:{{ www_group }} \
            --chmod=D2775,F664 \
-           {{ src_path }} {{ dst_path }}"
+           {{ files_src }} {{ files_dst }}"
 
-src_path: "/var/www/{{ domain }}/shared/{{ public_files_dir }}/"
-dst_path: "{{ deploy_to }}/shared/{{ public_files_dir }}/"
-
+files_src: "/var/www/{{ domain }}/shared/{{ public_files_dir }}/"
+files_dst: "{{ deploy_to }}/shared/{{ public_files_dir }}/"
