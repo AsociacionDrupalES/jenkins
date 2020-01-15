@@ -1,5 +1,10 @@
 ---
 
+_databases:
+  day:
+    db_name: "{{ appenv }}day"
+    duplicity_file_to_restore: "var/backups/mysql/sqldump/2019day.sql"
+
 files:
   ansible/dday/extra-vars.yml:
     path: 'ansible/extra-vars.yml'
@@ -20,10 +25,40 @@ pipelines:
       deploy:
         credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
     variants:
-      deploy-ENV:
+      deploy-dev:
         vars:
           environments: '#!groovy config._envs_dev'
+          environment: 'dev'
       PROD-deploy:
         vars:
           environments: '#!groovy config._envs_pro'
+          environment: 'pro'
+
+  reload-dev-db:
+    basename: 'reload-ENV-db'
+    config:
+      jobFolder: ''
+      ansible:
+        extra_files:
+          - 'ansible/tasks/db-sanitize-drush.yml'
+    vars:
+      databases: '#!groovy config._databases'
+      environments: '#!groovy config._envs_dev'
+      # job parameters
+      environment: 'dev'
+      source: 'From backup'
+      environment_src: '-NOT APPLICABLE-'
+      artifact: true
+      sanitize: true
+
+  reload-dev-files-from-prod:
+    basename: 'reload-ENV-files'
+    vars:
+      environments: '#!groovy config._envs_dev'
+      # job parameters
+      environment: 'dev'
+      environment_src: 'pro'
+
+  reload-dev:
+    basename: 'reload-ENV'
 

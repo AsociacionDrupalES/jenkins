@@ -1,19 +1,21 @@
 ---
 
+### Ansible / Ansistrano
 domain: 'asociaciondrupal.es'
 domain_env: "{{ ( '' if appenv == 'pro' else appenv + '.' ) + domain }}"
 
-ansistrano_shared_paths:
-  - 'sites/default/files'
-  - 'sites/default/private'
-ansistrano_shared_files:
-  - 'sites/default/settings.local.php'
-
+### Deploy
 rsync_extra_params:
   - '--exclude=sites/default/settings.local.php'
 
-drupal_rel_path : ''
-drush_args : ''
-varnish_domain : "{{ 'dummy' if appenv != 'pro' else 'asociaciondrupal.es' }}"
-varnish_servers :
-  - '127.0.0.1:6081'
+### Reload db
+drush_sanitize_mail: 'asociacion+user_%uid@drupal.es'
+
+# Shared
+shared_dirs:
+  sites/default/files: "{{ shared_dir }}"
+  sites/default/private: "{{ shared_dir }}"
+
+shared_files:
+  sites/default/settings.local.php: "{{ shared_file }}"
+

@@ -1,0 +1,15 @@
+---
+
+credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
+
+fetcher:
+  credentials_id: '02304973-08cf-4390-8edb-7a5c9d940cb8'
+  params: "-az --delete \
+           --omit-dir-times \
+           --chown=:{{ www_group }} \
+           --chmod=D2775,F664 \
+           {{ src_path }} {{ dst_path }}"
+
+src_path: "/var/www/{{ domain }}/shared/{{ public_files_dir }}/"
+dst_path: "{{ deploy_to }}/shared/{{ public_files_dir }}/"
+
