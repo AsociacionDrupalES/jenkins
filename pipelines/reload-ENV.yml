@@ -4,6 +4,7 @@ job_reload_db:
   name: 'reload-dev-db'
 job_reload_files:
   name: 'reload-dev-files'
+  propagate: false
 job_deploy:
   name: 'deploy-dev'
-
+  propagate: false
