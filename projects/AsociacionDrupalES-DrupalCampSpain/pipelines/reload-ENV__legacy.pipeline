@@ -23,7 +23,7 @@ pipeline {
       steps {
         script {
 
-lock(resource: "dev.idrupalcamp.es") {
+lock(resource: "dev.drupalcamp.es") {
     parallel (
         Files: {
             node('master') {
