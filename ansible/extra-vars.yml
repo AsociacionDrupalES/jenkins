@@ -9,7 +9,7 @@ deploy__after_symlink_tasks:
 
 ### sbhell / drush
 drush_alias: ''
-drush_args: "-y --nocolor -l {{ domain_env }}"
+drush_args: "-y --no-ansi -l {{ domain_env }}"
 
 ### Deploy
 varnish_servers :
