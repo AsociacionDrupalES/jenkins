@@ -62,4 +62,7 @@ pipelines:
 
   reload-dev:
     basename: 'reload-ENV'
+    vars:
+      environments: '#!groovy config._envs_dev'
+      environment: 'dev'
 
