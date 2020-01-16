@@ -55,10 +55,16 @@ pipelines:
     basename: 'reload-ENV-files'
     vars:
       environments: '#!groovy config._envs_dev'
+      files_src: "/var/www/2020.{{ domain }}/shared/{{ public_files_dir }}/"
       # job parameters
       environment: 'dev'
       environment_src: 'pro'
 
   reload-dev:
     basename: 'reload-ENV'
+    config:
+      timer: '0 5 * * *'
+    vars:
+      environments: '#!groovy config._envs_dev'
+      environment: 'dev'
 
