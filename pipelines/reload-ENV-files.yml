@@ -8,7 +8,10 @@ fetcher:
            --omit-dir-times \
            --chown=:{{ www_group }} \
            --chmod=D2775,F664 \
+           {{ fetcher_extra_params }} \
            {{ files_src }} {{ files_dst }}"
+
+fetcher_extra_params: '--exclude=styles --exclude=php'
 
 files_src: "/var/www/{{ domain }}/shared/{{ public_files_dir }}/"
 files_dst: "{{ deploy_to }}/shared/{{ public_files_dir }}/"
