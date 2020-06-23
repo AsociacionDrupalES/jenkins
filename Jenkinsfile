@@ -1,6 +1,6 @@
 #!groovy
 
-@Library('keynes@master') _
+@Library('keynes') _
 
 pipeline {
   agent { label 'master' }
