@@ -1,6 +1,7 @@
+aed01 ansible_host=aed01.asociaciondrupal.es
+
 [dev]
-aed01.asociaciondrupal.es ansible_user=deploy ansible_ssh_extra_args=
+aed01
 
 [pro]
-aed01.asociaciondrupal.es ansible_user=deploy ansible_ssh_extra_args=
-
+aed01
